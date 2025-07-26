@@ -1,33 +1,31 @@
 const weatherdisplay = document.getElementById('Weatherdisplay');
+const change = document.getElementById('change');
 let iscelsius = false;
+let temps = 0;
+let info;
+function updatedisplay(){
+      if(iscelsius == true){
+      info.textContent = `The Celsius is ${fahrenheitToCelsius(temps).toFixed(2)} C`;
+        change.textContent = 'Change to Fahrenheit';
+      }
+      else{
+        info.textContent = `The Fahrenheit is ${temps} F`;
+        change.textContent = 'Change to Celsius';
+      }
+    }
 
 async function getData(location) {
   try {
-    const info = document.createElement('textarea');
+    info = document.createElement('textarea');
     const title = document.createElement('h1');
-    const change = document.getElementById('change');
     const response = await fetch(
       `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=us&include=current&key=VZM8A95BRVWLUGE6BMFMF2J65&contentType=json`,
       { mode: 'cors' }
     );
     const data = await response.json();
     console.log(data);
-    info.textContent = `The Fahrenheit is ${data.currentConditions.temp} F`;
-    change.addEventListener('click', function(){
-      iscelsius =!iscelsius;
-      updatedisplay();
-    });
-
-    function updatedisplay(){
-      if(iscelsius == true){
-      info.textContent = `The Celsius is ${fahrenheitToCelsius(data.currentConditions.temp).toFixed(2)} C`;
-        change.textContent = 'Change to Fahrenheit';
-      }
-      else{
-        info.textContent = `The Fahrenheit is ${data.currentConditions.temp} F`;
-        change.textContent = 'Change to Celsius';
-      }
-    }
+    temps = data.currentConditions.temp;
+    info.textContent = `The Fahrenheit is ${temps} F`;
     
     title.textContent = data.resolvedAddress;
     weatherdisplay.appendChild(title);
@@ -37,8 +35,11 @@ async function getData(location) {
     alert("Error fetching weather: " + error);
   }
 }
+ change.addEventListener('click', function(){
+      iscelsius =!iscelsius;
+      updatedisplay();
+    });
 
-// Call it
 getData('queens');
 
 const button = document.getElementById('submit');
@@ -52,10 +53,6 @@ button.addEventListener('click', function(){
 
 function fahrenheitToCelsius(f) {
   return (f - 32) * 5 / 9;
-}
-
-function celsiusToFahrenheit(c) {
-  return (c * 9 / 5) + 32;
 }
 
 function clearscreen(){
